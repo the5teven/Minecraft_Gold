@@ -1,0 +1,4 @@
+name: Gold
+version: ${project.version}
+main: com.the5teven.gold.Gold
+api-version: 1.16
