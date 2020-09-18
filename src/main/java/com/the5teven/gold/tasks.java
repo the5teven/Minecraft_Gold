@@ -1,20 +1,17 @@
 package com.the5teven.gold;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class events implements Listener {
+public class tasks extends BukkitRunnable{
+    Server server;
+
+    public tasks(Server server){
+        this.server = server;
+    }
     public void Golditem(ItemStack item){
         if (item != null) {
             if (item.getType().name().equals("APPLE")) {
@@ -54,58 +51,12 @@ public class events implements Listener {
             }
         }
     }
-
-    public void GoldBlock(Block block){
-        Material mat = block.getType();
-        if (mat.name().contains("_ORE")) {
-            block.setType(Material.GOLD_ORE);
-        }else if (mat.name().contains("_BLOCK")) {
-            block.setType(Material.GOLD_BLOCK);
+    public void run(){
+        for(Player player : server.getOnlinePlayers()){
+            for (ItemStack item: player.getInventory().getContents()){
+                Golditem(item);
+            }
         }
     }
-
-    @EventHandler
-    public void onInventoryClickEvent(InventoryClickEvent event) {
-        for (ItemStack item :event.getWhoClicked().getInventory().getContents()){
-            Golditem(item);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClickEvent(EntityPickupItemEvent event) {
-        ItemStack item  = event.getItem().getItemStack();
-        Golditem(item);
-    }
-
-    @EventHandler
-    public void onHand(PlayerItemHeldEvent event) {
-        ItemStack item = event.getPlayer().getInventory().getItem(event.getNewSlot());
-        Golditem(item);
-        }
-
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        Location loc = event.getPlayer().getLocation();
-        loc.setY(loc.getY() - 1);
-        Block block = loc.getBlock();
-        GoldBlock(block);
-    }
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if( event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)){
-            if(event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
-           Block block = event.getClickedBlock();
-           GoldBlock(block);
-        }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event){
-        ItemStack item = event.getMainHandItem();
-        Golditem(item);
-        ItemStack item2 = event.getOffHandItem();
-        Golditem(item2);}
 
 }
